@@ -10,14 +10,19 @@ public class TerrainGenerator : MonoBehaviour
 
     public int[] angles;
 
+    public bool waterblockplaced = false;
+
+    GameObject sourceWater;
+
     void Start()
     {
-        int mapheight = 30;
-        int mapwidth = 30;
+        int mapheight = 50;
+        int mapwidth = 50;
 
         int random;
 
         Vector2 shift = new Vector2((int)(Random.Range(0,100)), (int)(Random.Range(0, 100))); // play with this to shift map around
+        Vector2 cityShift = new Vector2((int)(Random.Range(0, 100)), (int)(Random.Range(0, 100))); // play with this to shift map around
         float zoom = 0.1f; // play with this to zoom into the noise field
 
         for (float x = 0; x < mapwidth; x+= 1f)
@@ -26,41 +31,17 @@ public class TerrainGenerator : MonoBehaviour
             {
                 Vector2 pos = zoom * (new Vector2(x, y)) + shift;
                 float noise = Mathf.PerlinNoise(pos.x, pos.y);
+
+                Vector2 cityPos = zoom * (new Vector2(x, y)) + cityShift;
+                float cityNoise = Mathf.PerlinNoise(cityPos.x, cityPos.y);
+
                 if (noise < 0.2f)
                 {
-                    random = 0;
-                    //map[x, y] = 0; // water
-                }
-                else if (noise < 0.25f)
-                {
-                    random = 1;
-                    //map[x, y] = 2; // sand
-                }
-                else if (noise < 0.3f)
-                {
-                    random = 2;
-                    //map[x, y] = 1; // land
-                }
-                else if (noise < 0.35f)
-                {
-                    random = 3;
-                    //map[x, y] = 3; // mountain
-                }
-                else if (noise < 0.5f)
-                {
-                    random = 4;
-                }
-                else if (noise < 0.6f)
-                {
-                    random = 5;
-                }
-                else if (noise < 0.7f)
-                {
-                    random = 4;
+                    random = 11; //Water
                 }
                 else
                 {
-                    random = 6;
+                    random = 4; //Land
                 }
 
                 float newy = 0;
@@ -74,9 +55,95 @@ public class TerrainGenerator : MonoBehaviour
                     newy = 0;
                 }
 
-                Instantiate(tiles[random], new Vector3(x, 0, y + newy), Quaternion.Euler(new Vector3(0, angles[(int)(Random.Range(0, angles.Length))], 0)));
+                if(random != 11)
+                {
+                    if(noise < 0.75f)
+                    {
+                        if (cityNoise < 0.1f)
+                        {
+                            random = 0;
+                            //City
+                        }
+                        else if (cityNoise < 0.15f)
+                        {
+                            random = 1;
+                            // Urban
+                        }
+                        else if (cityNoise < 0.2f)
+                        {
+                            random = 2;
+                            // Suburban
+                        }
+                        else if (cityNoise < 0.25f)
+                        {
+                            random = 3;
+                            // Rural
+                        }
+                        else
+                        {
+                            random = 4;
+                            // Land
+                        }
+                    }
+                    else if (noise < 0.8f)
+                    {
+                        if (cityNoise < 0.1f)
+                        {
+                            random = 1;
+                            //Urban
+                        }
+                        else if (cityNoise < 0.15f)
+                        {
+                            random = 2;
+                            // Suburban
+                        }
+                        else if (cityNoise < 0.2f)
+                        {
+                            random = 3;
+                            // Rural
+                        }
+                        else
+                        {
+                            random = 4;
+                            // Land
+                        }
+                    }
+                    else
+                    {
+                        random = 6;
+                    }
+                    
+                    if(noise < 0.8f)
+                    {
+                        Instantiate(tiles[random], new Vector3(x, noise / 1.5f, y + newy), Quaternion.identity);
+                    }
+                    else if (noise < 0.85f)
+                    {
+                        Instantiate(tiles[random], new Vector3(x, noise / 1.25f, y + newy), Quaternion.identity);
+                    }
+                    else if (noise < 0.9f)
+                    {
+                        Instantiate(tiles[random], new Vector3(x, noise, y + newy), Quaternion.identity);
+                    }
+                    else if (noise < 0.95f)
+                    {
+                        Instantiate(tiles[random], new Vector3(x, noise * 1.5f, y + newy), Quaternion.identity);
+                    }
+                    else
+                    {
+                        Instantiate(tiles[random], new Vector3(x, noise * 2f, y + newy), Quaternion.identity);
+                    }
+                }
+                else
+                {
+                    Instantiate(tiles[random], new Vector3(x, 0.18f, y + newy), Quaternion.identity);
+                }
+                
             }
         }
+
+        sourceWater = GameObject.Find("Water(Clone)");
+        
     }
     
     void Update()
