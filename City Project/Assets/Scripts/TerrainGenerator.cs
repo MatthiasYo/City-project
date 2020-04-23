@@ -5,14 +5,10 @@ using UnityEngine;
 public class TerrainGenerator : MonoBehaviour
 {
     public int[,] map;
-
     public GameObject[] tiles;
-
     public int[] angles;
 
     public bool waterblockplaced = false;
-
-    GameObject sourceWater;
 
     void Start()
     {
@@ -37,15 +33,15 @@ public class TerrainGenerator : MonoBehaviour
 
                 if (noise < 0.2f)
                 {
-                    random = 11; //Water
+                    random = 11; // Water
                 }
                 else
                 {
-                    random = 4; //Land
+                    random = 4; // Land
                 }
 
                 float newy = 0;
-
+                // Creates Hexagonal Grid
                 if(x%2 == 0)
                 {
                     newy = 0.5f;
@@ -54,100 +50,83 @@ public class TerrainGenerator : MonoBehaviour
                 {
                     newy = 0;
                 }
-
-                if(random != 11)
+                // Tile Look
+                if(random != 11) //If not water
                 {
-                    if(noise < 0.75f)
+                    if(noise < 0.75f) // If not mountain
                     {
                         if (cityNoise < 0.1f)
                         {
-                            random = 0;
-                            //City
+                            random = 0; // City
                         }
                         else if (cityNoise < 0.15f)
                         {
-                            random = 1;
-                            // Urban
+                            random = 1; // Urban
                         }
                         else if (cityNoise < 0.2f)
                         {
-                            random = 2;
-                            // Suburban
+                            random = 2; // Suburban
                         }
                         else if (cityNoise < 0.25f)
                         {
-                            random = 3;
-                            // Rural
+                            random = 3; // Rural
                         }
                         else
                         {
-                            random = 4;
-                            // Land
+                            random = 4; // Land
                         }
                     }
-                    else if (noise < 0.8f)
+                    else if (noise < 0.8f) // If on slope of mountain
                     {
                         if (cityNoise < 0.1f)
                         {
-                            random = 1;
-                            //Urban
+                            random = 1; // Urban
                         }
                         else if (cityNoise < 0.15f)
                         {
-                            random = 2;
-                            // Suburban
+                            random = 2; // Suburban
                         }
                         else if (cityNoise < 0.2f)
                         {
-                            random = 3;
-                            // Rural
+                            random = 3; // Rural
                         }
                         else
                         {
-                            random = 4;
-                            // Land
+                            random = 4; // Land
                         }
                     }
-                    else
+                    else // If mountain
                     {
-                        random = 6;
+                        random = 6; // Mountain
                     }
                     
-                    if(noise < 0.8f)
+                    if(noise < 0.8f) // Generate Land tiles
                     {
                         Instantiate(tiles[random], new Vector3(x, noise / 1.5f, y + newy), Quaternion.identity);
                     }
-                    else if (noise < 0.85f)
+                    // Deals with rise for mountains
+                    else if (noise < 0.85f) // Low mountain
                     {
                         Instantiate(tiles[random], new Vector3(x, noise / 1.25f, y + newy), Quaternion.identity);
                     }
-                    else if (noise < 0.9f)
+                    else if (noise < 0.9f) // Mountain
                     {
                         Instantiate(tiles[random], new Vector3(x, noise, y + newy), Quaternion.identity);
                     }
-                    else if (noise < 0.95f)
+                    else if (noise < 0.95f) // High mountain
                     {
                         Instantiate(tiles[random], new Vector3(x, noise * 1.5f, y + newy), Quaternion.identity);
                     }
-                    else
+                    else // Highest mountain
                     {
                         Instantiate(tiles[random], new Vector3(x, noise * 2f, y + newy), Quaternion.identity);
                     }
                 }
-                else
+                else // Water
                 {
                     Instantiate(tiles[random], new Vector3(x, 0.18f, y + newy), Quaternion.identity);
                 }
-                
             }
         }
-
-        sourceWater = GameObject.Find("Water(Clone)");
-        
-    }
-    
-    void Update()
-    {
-        
     }
 }
